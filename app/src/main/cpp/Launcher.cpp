@@ -39,7 +39,7 @@ void Launcher::init(JavaVM *javaVm, AAssetManager *manager) {
         return;
     }
     this->hooks = make_shared<Hooks>(handle);
-    this->hooks->init();
+    //this->hooks->init();
 }
 
 void Launcher::initGame(ANativeActivity *activity, void *savedState, size_t savedStateSize) const {
