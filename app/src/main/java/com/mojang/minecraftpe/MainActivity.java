@@ -53,6 +53,7 @@ import android.os.SystemClock;
 import android.os.Vibrator;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
+import android.os.storage.StorageManager;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore.Images.Media;
 import android.speech.tts.TextToSpeech;
@@ -178,7 +179,8 @@ public class MainActivity extends NativeActivity implements OnKeyListener, FileP
     private TextToSpeech textToSpeechManager;
     public int virtualKeyboardHeight = 0;
 
-    public void startPlayIntegrityCheck(){}
+    public void startPlayIntegrityCheck() {
+    }
 
     private void copyFile(InputStream var1, OutputStream var2) throws IOException {
         byte[] var3 = new byte[1024];
@@ -192,15 +194,95 @@ public class MainActivity extends NativeActivity implements OnKeyListener, FileP
     }
 
     @Keep
-    public void enableBrazeSDK(){
+    public void setKeepScreenOnFlag(boolean keepScreenOn) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (keepScreenOn) {
+                    getWindow().addFlags(128);
+                } else {
+                    getWindow().clearFlags(128);
+                }
+            }
+        });
     }
 
     @Keep
-    public void setBrazeID(String id){
+    public long getDebugMemoryInfo(String str) {
+        return 0;
     }
 
     @Keep
-    public void disableBrazeSDK(){
+    public boolean getIsRunningInAppCenter() {
+        return true;
+    }
+
+    @Keep
+    public void initializeMulticast() {
+
+    }
+
+    @Keep
+    public void setMulticastReferenceCounting(boolean counting) {
+
+    }
+
+    @Keep
+    public void acquireMulticast() {
+
+    }
+
+    @Keep
+    public boolean isMulticastHeld() {
+        return false;
+    }
+
+    @Keep
+    public boolean isBrazeSDKDisabled(){
+        return false;
+    }
+
+    @Keep
+    public void releaseMulticast(){
+
+    }
+
+    @Keep
+    public boolean supportsSizeQuery(String path) {
+        if (Build.VERSION.SDK_INT >= 26) {
+            try {
+                ((StorageManager) getApplicationContext().getSystemService(StorageManager.class)).getUuidForPath(new File(path));
+                return true;
+            } catch (IOException unused) {
+            }
+        }
+        return false;
+    }
+
+    @Keep
+    public long getAllocatableBytes(String path) {
+        if (Build.VERSION.SDK_INT >= 26) {
+            try {
+                StorageManager storageManager = (StorageManager) getApplicationContext().getSystemService(StorageManager.class);
+                return storageManager.getAllocatableBytes(storageManager.getUuidForPath(new File(path)));
+            } catch (IOException e) {
+                Log.e("MCPE", "IOException while attempting to get allocatable bytes\n" + e.toString());
+                return 0L;
+            }
+        }
+        return 0L;
+    }
+
+    @Keep
+    public void enableBrazeSDK() {
+    }
+
+    @Keep
+    public void setBrazeID(String id) {
+    }
+
+    @Keep
+    public void disableBrazeSDK() {
     }
 
     @Keep
@@ -1150,7 +1232,7 @@ public class MainActivity extends NativeActivity implements OnKeyListener, FileP
     }
 
     public boolean isTTSInstalled() {
-        Iterator var1 = ( this.getSystemService(AccessibilityManager.class)).getInstalledAccessibilityServiceList().iterator();
+        Iterator var1 = (this.getSystemService(AccessibilityManager.class)).getInstalledAccessibilityServiceList().iterator();
 
         do {
             if (!var1.hasNext()) {
@@ -1680,7 +1762,7 @@ public class MainActivity extends NativeActivity implements OnKeyListener, FileP
     }
 
     public void throwRuntimeExceptionFromNative(final String var1) {
-        Log.e(this.getClass().getCanonicalName(), "throwRuntimeExceptionFromNative: "+ var1);
+        Log.e(this.getClass().getCanonicalName(), "throwRuntimeExceptionFromNative: " + var1);
     }
 
     public void tick() {

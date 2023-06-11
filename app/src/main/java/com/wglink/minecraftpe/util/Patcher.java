@@ -53,6 +53,9 @@ public class Patcher {
         }
         zipFile.close();
         list.add(dex);
+        for (File file : list) {
+            Log.i(TAG, "load dex: "+file.getName());
+        }
         V23.install(classLoader, list, new File(context.getFilesDir(), PLUGIN_CACHE_DIR));
         patchNativeLibraryDir(classLoader, info.nativeLibraryDir);
     }
